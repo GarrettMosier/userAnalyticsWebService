@@ -13,7 +13,7 @@ main = do
   postData testPostRequestTwo
 
   -- print $ getDataPure 0 []
-  f <- getDataDirty 0
-  print f
+  getDataDirty 0 >>= print
+
 
 

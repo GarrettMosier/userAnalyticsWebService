@@ -13,7 +13,7 @@ main :: IO ()
 main = do
   scotty 3000 $ do
     get "/analytics" $ do -- TODO Deal with case where timestamp isn't provided.
-      -- TODO Currently fails if foo doesn't exit (which it doesn't on startup)
+      -- TODO Currently fails if foo doesn't exist (which it doesn't on startup)
       timestamp <- param "timestamp" :: ActionM Int
       dataSummary <- liftIO (getDataDirty timestamp) 
       json dataSummary

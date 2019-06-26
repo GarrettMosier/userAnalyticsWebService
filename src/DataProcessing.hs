@@ -2,6 +2,7 @@ module DataProcessing where
 
 import Types
 import Data.List
+import Control.Exception
 
 fileLocation = "foo.txt" -- TODO Modify to write outside repo
 
@@ -14,8 +15,10 @@ postData pr@(PostRequest ts uid event) = appendFile fileLocation (show pr ++ "\n
 -- Reads all previously posted data
 readStorage :: IO [PostRequest]
 readStorage = do
-    fileLines <- fmap lines (readFile fileLocation)
-    return (map toPostRequest fileLines)
+    fileLines <- try (fmap lines (readFile fileLocation)) :: IO (Either IOException [String])
+    case fileLines of
+      Left except -> return []
+      Right contents -> return (map toPostRequest contents)
 
 
 -- Summarizes data assuming it's given 

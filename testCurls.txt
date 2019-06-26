@@ -1,0 +1,2 @@
+http://localhost:3000/analytics?timestamp=4
+curl -X POST "http://localhost:3000/analytics?timestamp=4&user=20&event=click"

@@ -40,9 +40,8 @@ getUserID (PostRequest _ uid _) = uid
 
 -- Reads storage and sumarizes data
 getDataDirty :: TimeStamp -> IO Response
-getDataDirty ts = do
-  f <- readStorage
-  return (getDataPure ts f)
+getDataDirty ts = fmap (getDataPure ts) readStorage
+
 
 -- TODO Use a library to automate
 toPostRequest :: String -> PostRequest

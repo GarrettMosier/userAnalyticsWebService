@@ -18,6 +18,7 @@ data PostRequest = PostRequest TimeStamp UserID Event deriving (Show, Read)
 fileLocation = "foo.txt" -- TODO Modify to write outside repo
 
 -- Writes a POST request to storage
+-- TODO Maybe prepend data since reading recent more often
 postData :: PostRequest -> IO ()
 postData pr@(PostRequest ts uid event) = appendFile fileLocation (show pr ++ "\n")
 
@@ -31,11 +32,16 @@ readStorage = do
 
 -- Summarizes data assuming it's given 
 getDataPure :: TimeStamp -> [PostRequest] -> Response
-getDataPure ts requests = Response uniqueUsers clicks impressions 
-               where uniqueUsers = length ((nub . sort ) (map getUserID currentEvents)) -- Consider more efficient solution
+getDataPure ts requests = Response uniqueUserCount clicks impressions 
+               where uniqueUserCount = length ((nub . sort ) (map getUserID currentEvents)) -- Consider more efficient solution
                      clicks = length (filter isClick currentEvents)
                      impressions = length (filter isImpression currentEvents)
-                     currentEvents = requests -- TODO Make sure matches spec
+                     currentEvents = filter (withinHour ts) requests 
+
+
+-- TODO Make sure matches spec. Ideally data store would do this filter
+withinHour :: TimeStamp -> (PostRequest -> Bool)
+withinHour ts = \x -> True
 
 
 -- Extracts user ID from post request.
@@ -71,7 +77,7 @@ main = do
   postData testPostRequest
   postData testPostRequestTwo
 
-  print $ getDataPure 0 []
+  -- print $ getDataPure 0 []
   f <- getDataDirty 0
   print f
 

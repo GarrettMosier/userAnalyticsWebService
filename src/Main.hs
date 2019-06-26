@@ -17,7 +17,13 @@ main = do
       timestamp <- param "timestamp" :: ActionM Int
       dataSummary <- liftIO (getDataDirty timestamp) 
       json dataSummary
-    post "/analytics?timestamp=:timestamp&user=:uid&event=:event" $ do
+    post "/analytics" $ do
+      timestamp <- param "timestamp"
+      user <- param ":uid"
+      event <- param ":event"
+
+      liftIO (postData (PostRequest timestamp user event)) 
+      
       text "Yo"
       -- return 204
 

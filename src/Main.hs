@@ -6,15 +6,17 @@ import DataProcessing
 import Types
 
 import Web.Scotty
+import Control.Monad.IO.Class
 
 main :: IO ()
 main = do
   scotty 3000 $ do
     get "/foo" $ do
       text "Sup"
-    get "/analytics?timestamp=:timestamp" $ do
-      w <- param "timestamp" :: ActionM Integer
-      text "Hey"
+    get "/analytics" $ do -- TODO Deal with case where timestamp isn't provided
+      timestamp <- param "timestamp" :: ActionM Int
+      dataSummary <- liftIO (getDataDirty timestamp) 
+      json dataSummary
     post "/analytics?timestamp=:timestamp&user=:uid&event=:event" $ do
       text "Yo"
       -- return 204

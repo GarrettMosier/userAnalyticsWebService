@@ -34,7 +34,7 @@ getDataPure ts requests = Response uniqueUserCount clicks impressions
 -- This does not check to see if the request was made since the top of the hour.
 -- TODO Check if that is what the spec wanted
 withinHour :: TimeStamp -> (PostRequest -> Bool)
-withinHour ts = \x -> ts - x <= millisecondsPerHour
+withinHour ts = \(PostRequest x _ _) -> ts - x <= millisecondsPerHour
            where millisecondsPerHour = 3600000
 
 

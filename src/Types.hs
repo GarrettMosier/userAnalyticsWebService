@@ -3,8 +3,15 @@
 module Types where
 
 import Data.Aeson
+import Web.Scotty
 
 data Event = Click | Impression deriving (Show, Read)
+
+instance Parsable Event where
+  parseParam "click" = Right Click
+  parseParam "impression" = Right Impression
+  parseParam _ = Left "Denied"
+
 
 type Clicks = Int
 type Impressions = Int

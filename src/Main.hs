@@ -19,8 +19,8 @@ main = do
       json dataSummary
     post "/analytics" $ do
       timestamp <- param "timestamp"
-      user <- param ":uid"
       event <- param ":event"
+      user <- param ":user"
 
       liftIO (postData (PostRequest timestamp user event)) 
       

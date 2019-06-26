@@ -19,6 +19,7 @@ executable analytics
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5,
                        scotty,
-                       aeson
+                       aeson,
+                       http-types
   other-modules:       Types,
                        DataProcessing

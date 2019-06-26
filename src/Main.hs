@@ -6,13 +6,12 @@ import DataProcessing
 import Types
 
 import Web.Scotty
+import Network.HTTP.Types
 import Control.Monad.IO.Class
 
 main :: IO ()
 main = do
   scotty 3000 $ do
-    get "/foo" $ do
-      text "Sup"
     get "/analytics" $ do -- TODO Deal with case where timestamp isn't provided.
       -- TODO Currently fails if foo doesn't exit (which it doesn't on startup)
       timestamp <- param "timestamp" :: ActionM Int
@@ -24,19 +23,5 @@ main = do
       user <- param "user"
 
       liftIO (postData (PostRequest timestamp user event)) 
-      
-      text "Yo"
-      -- return 204
 
-      
-  {-
-  let testPostRequest = PostRequest 1 2 Click
-  let testPostRequestTwo = PostRequest 1 2 Impression
-
-  postData testPostRequest
-  postData testPostRequestTwo
-
-  getDataDirty 0 >>= print
-
--}
-
+      status status204

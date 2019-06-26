@@ -12,12 +12,19 @@ import Control.Monad.IO.Class
 main :: IO ()
 main = do
   scotty 3000 $ do
+    getSummary
+    postEntry
+    
+getSummary :: ScottyM ()
+getSummary = do      
     get "/analytics" $ do -- TODO Deal with case where timestamp isn't provided.
-      -- TODO Currently fails if foo doesn't exist (which it doesn't on startup)
       timestamp <- param "timestamp" :: ActionM Int
       dataSummary <- liftIO (getDataDirty timestamp) 
       json dataSummary
-    post "/analytics" $ do
+
+postEntry :: ScottyM ()
+postEntry = do
+  post "/analytics" $ do
       timestamp <- param "timestamp"
       event <- param "event"
       user <- param "user"

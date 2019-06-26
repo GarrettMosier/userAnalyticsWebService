@@ -4,7 +4,7 @@ import Types
 import Data.List
 import Control.Exception
 
-fileLocation = "foo.txt" -- TODO Modify to write outside repo
+fileLocation = "storageUnit.txt" -- TODO Modify to write outside repo
 
 -- Writes a POST request to storage
 -- TODO Maybe prepend data since reading recent more often

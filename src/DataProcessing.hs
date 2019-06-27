@@ -4,7 +4,7 @@ import Types
 import Data.List
 import Control.Exception
 
-fileLocation = "foo.txt" -- TODO Modify to write outside repo
+fileLocation = "storageUnit.txt" -- TODO Modify to write outside repo
 
 -- Writes a POST request to storage
 -- TODO Maybe prepend data since reading recent more often
@@ -30,9 +30,12 @@ getDataPure ts requests = Response uniqueUserCount clicks impressions
                      currentEvents = filter (withinHour ts) requests 
 
 
--- TODO Make sure matches spec. Ideally data store would do this filter
+-- Checks to see if a request was from the last hour.
+-- This does not check to see if the request was made since the top of the hour.
+-- TODO Check if that is what the spec wanted
 withinHour :: TimeStamp -> (PostRequest -> Bool)
-withinHour ts = \x -> True
+withinHour ts = \(PostRequest x _ _) -> ts - x <= millisecondsPerHour
+           where millisecondsPerHour = 3600000
 
 
 -- Extracts user ID from post request.

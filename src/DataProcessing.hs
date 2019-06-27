@@ -8,22 +8,27 @@ fileLocation = "storageUnit.txt" -- TODO Modify to write outside repo
 
 -- Writes a POST request to storage
 -- TODO Maybe prepend data since reading recent more often
-postData :: PostRequest -> IO ()
-postData pr@(PostRequest ts uid event) = appendFile fileLocation (show pr ++ "\n")
+writeAnalyticsEntry :: PostRequest -> IO ()
+writeAnalyticsEntry pr = appendFile fileLocation (show pr ++ "\n")
 
 
 -- Reads all previously posted data
-readStorage :: IO [PostRequest]
-readStorage = do
+getPriorAnalyticsEntriesFromStorage :: IO [PostRequest]
+getPriorAnalyticsEntriesFromStorage = do
     fileLines <- try (fmap lines (readFile fileLocation)) :: IO (Either IOException [String])
     case fileLines of
       Left except -> return []
       Right contents -> return (map toPostRequest contents)
 
 
--- Summarizes data assuming it's given 
-getDataPure :: TimeStamp -> [PostRequest] -> Response
-getDataPure ts requests = Response uniqueUserCount clicks impressions 
+-- Reads storage and sumarizes data
+summarizeEntriesFromStorage :: TimeStamp -> IO Response
+summarizeEntriesFromStorage ts = fmap (summarizeAnalyticsEntries ts) getPriorAnalyticsEntriesFromStorage
+
+
+-- Summarizes analytics data from within an hour
+summarizeAnalyticsEntries :: TimeStamp -> [PostRequest] -> Response
+summarizeAnalyticsEntries ts requests = Response uniqueUserCount clicks impressions 
                where uniqueUserCount = length ((nub . sort ) (map getUserID currentEvents)) -- Consider more efficient solution
                      clicks = length (filter isClick currentEvents)
                      impressions = length (filter isImpression currentEvents)
@@ -42,11 +47,6 @@ withinHour ts = \(PostRequest x _ _) -> ts - x <= millisecondsPerHour
 -- Consider using lens instead
 getUserID :: PostRequest -> UserID
 getUserID (PostRequest _ uid _) = uid
-
-
--- Reads storage and sumarizes data
-getDataDirty :: TimeStamp -> IO Response
-getDataDirty ts = fmap (getDataPure ts) readStorage
 
 
 -- TODO Use a library to automate

@@ -20,6 +20,10 @@ executable analytics
   build-depends:       base >= 4.7 && < 5,
                        scotty,
                        aeson,
-                       http-types
+                       http-types,
+                       influxdb,
+                       lens,
+                       containers,
+                       time
   other-modules:       Types,
                        DataProcessing

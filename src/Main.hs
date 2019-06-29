@@ -2,15 +2,15 @@
 
 module Main where
 
-import DataProcessing
-import Types
+import           DataProcessing
+import           Types
 
-import Web.Scotty
-import Network.HTTP.Types
-import Control.Monad.IO.Class
+import           Control.Monad.IO.Class
+import           Network.HTTP.Types
+import           Web.Scotty
 
 
--- Takes the endpoints and creates the web app 
+-- Takes the endpoints and creates the web app
 main :: IO ()
 main = do
   scotty 3000 $ do
@@ -20,10 +20,10 @@ main = do
 
 -- Summarizes all data from the last hour
 getSummary :: ScottyM ()
-getSummary = do      
+getSummary = do
     get "/analytics" $ do -- TODO Deal with case where timestamp isn't provided.
       timestamp <- param "timestamp" :: ActionM Int
-      dataSummary <- liftIO (summarizeEntriesFromStorage timestamp) 
+      dataSummary <- liftIO (summarizeEntriesFromStorage timestamp)
       json dataSummary
 
 
@@ -35,6 +35,6 @@ postEntry = do
       event <- param "event"
       user <- param "user" -- TODO Return 400 instead of 500 when param not found. Might want to use rescue or modify default handler
 
-      liftIO (writeAnalyticsEntry (PostRequest timestamp user event)) 
+      liftIO (writeAnalyticsEntry (PostRequest timestamp user event))
 
       status status204

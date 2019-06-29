@@ -1,8 +1,8 @@
 module DataProcessing where
 
-import Types
-import Data.List
-import Control.Exception
+import           Control.Exception
+import           Data.List
+import           Types
 
 fileLocation = "storageUnit.txt" -- TODO Modify to write outside repo
 
@@ -17,7 +17,7 @@ getPriorAnalyticsEntriesFromStorage :: IO [PostRequest]
 getPriorAnalyticsEntriesFromStorage = do
     fileLines <- try (fmap lines (readFile fileLocation)) :: IO (Either IOException [String])
     case fileLines of
-      Left except -> return []
+      Left except    -> return []
       Right contents -> return (map toPostRequest contents)
 
 
@@ -28,11 +28,11 @@ summarizeEntriesFromStorage ts = fmap (summarizeAnalyticsEntries ts) getPriorAna
 
 -- Summarizes analytics data from within an hour
 summarizeAnalyticsEntries :: TimeStamp -> [PostRequest] -> Response
-summarizeAnalyticsEntries ts requests = Response uniqueUserCount clicks impressions 
+summarizeAnalyticsEntries ts requests = Response uniqueUserCount clicks impressions
                where uniqueUserCount = length ((nub . sort ) (map getUserID currentEvents)) -- Consider more efficient solution
                      clicks = length (filter isClick currentEvents)
                      impressions = length (filter isImpression currentEvents)
-                     currentEvents = filter (withinHour ts) requests 
+                     currentEvents = filter (withinHour ts) requests
 
 
 -- Checks to see if a request was from the last hour.
@@ -55,8 +55,8 @@ toPostRequest s = read s
 
 
 isClick (PostRequest _ _ Click) = True
-isClick _ = False
+isClick _                       = False
 
 -- TODO Derive from typeclass
 isImpression (PostRequest _ _ Impression) = True
-isImpression _ = False
+isImpression _                            = False
